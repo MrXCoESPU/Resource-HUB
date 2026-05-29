@@ -10,24 +10,49 @@
     <style>
         /* --- PALETTE COLORI COORDINATA AL LOGO --- */
         :root {
-            --bg-main: #0a0a0a;             /* Nero profondo di sfondo */
-            --panel-bg: rgba(23, 23, 23, 0.85); /* Schede scure tattiche */
+            --panel-bg: rgba(15, 15, 15, 0.75); /* Schede scure in trasparenza sul video */
             --accent: #d4af37;             /* Oro / Giallo del logo */
             --accent-hover: #b8921a;       /* Oro più scuro al passaggio del mouse */
             --text-main: #f8fafc;
-            --text-muted: #a3a3a3;
+            --text-muted: #d4d4d4;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
             color: var(--text-main);
             min-height: 100vh;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            background-color: #000; /* Sfondo di sicurezza se il video si carica a rilento */
+            overflow-x: hidden;
+        }
+
+        /* --- CONTENITORE VIDEO DI SFONDO --- */
+        .video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -2;
+            object-fit: cover; /* Taglia e adatta il video a qualsiasi schermo */
+        }
+
+        /* Pellicola scura per rendere i testi perfettamente leggibili sul video */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65); /* Aumenta lo 0.65 se vuoi lo sfondo più scuro */
+            z-index: -1;
         }
 
         /* Barra delle Lingue */
@@ -38,6 +63,7 @@
             justify-content: flex-end;
             gap: 12px;
             margin-bottom: 20px;
+            z-index: 10;
         }
 
         .lang-btn {
@@ -56,7 +82,7 @@
             border-color: var(--accent);
         }
 
-        .hub-container { max-width: 750px; width: 100%; }
+        .hub-container { max-width: 750px; width: 100%; z-index: 5; }
 
         /* Header con Logo inserito */
         header { 
@@ -68,15 +94,15 @@
         }
         
         .logo-img {
-            width: 160px; /* Dimensione del logo ottimizzata */
+            width: 150px;
             height: auto;
             margin-bottom: 15px;
             border-radius: 50%;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
         }
 
-        h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; color: var(--text-main); }
-        header p { color: var(--text-muted); font-size: 0.95rem; }
+        h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        header p { color: var(--text-muted); font-size: 0.95rem; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         
         /* QR Code */
         .qr-card {
@@ -87,7 +113,7 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
         }
         .qr-card p { color: #0a0a0a; font-weight: 700; margin-top: 12px; font-size: 0.8rem; text-align: center; letter-spacing: 0.5px;}
 
@@ -95,18 +121,19 @@
         .search-box {
             width: 100%;
             background: var(--panel-bg);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
             padding: 14px 20px;
             border-radius: 12px;
             color: white;
             margin-bottom: 20px;
             outline: none;
             font-family: inherit;
+            backdrop-filter: blur(5px);
             transition: 0.3s;
         }
         .search-box:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
         /* Liste e Categorie */
@@ -117,6 +144,7 @@
             color: var(--accent);
             margin: 25px 0 12px 5px;
             letter-spacing: 1px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
 
         .resource-item {
@@ -129,21 +157,22 @@
             text-decoration: none;
             color: inherit;
             margin-bottom: 10px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px); /* Effetto vetro sfocato sul video */
+            border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.2s ease;
         }
 
         .resource-item:hover {
             transform: translateY(-2px);
-            border-color: rgba(212, 175, 55, 0.4);
-            background: rgba(35, 35, 35, 0.9);
+            border-color: rgba(212, 175, 55, 0.5);
+            background: rgba(25, 25, 25, 0.85);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
 
         .file-info { display: flex; align-items: center; gap: 15px; }
         .file-icon { font-size: 1.5rem; }
         .file-name { font-weight: 600; display: block; margin-bottom: 2px; }
-        .file-meta { font-size: 0.85rem; color: var(--text-muted); }
+        .file-meta { font-size: 0.85rem; color: #cbd5e1; }
 
         .btn-download {
             background: var(--accent);
@@ -158,10 +187,15 @@
             background: var(--accent-hover);
         }
 
-        @media print { .lang-bar, .search-box, .category-title, .resource-item { display: none; } }
+        @media print { .lang-bar, .search-box, .category-title, .resource-item, .video-background, .video-overlay { display: none; } }
     </style>
 </head>
 <body>
+
+    <video autoplay loop muted playsinline class="video-background">
+        <source src="sfondo.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
 
     <div class="lang-bar">
         <span class="lang-btn active" onclick="setLanguage('it')" title="Italiano">🇮🇹</span>
@@ -212,7 +246,6 @@
     </div>
 
 <script>
-    // DIZIONARIO TRADUZIONI
     const translations = {
         it: {
             subTitle: "Materiali e Risorse Digitali",
@@ -237,7 +270,6 @@
         }
     };
 
-    // LOGICA CAMBIO LINGUA
     function setLanguage(lang) {
         document.getElementById('subTitle').innerText = translations[lang].subTitle;
         document.getElementById('qrText').innerText = translations[lang].qrText;
@@ -252,7 +284,6 @@
         event.currentTarget.classList.add('active');
     }
 
-    // GENERATORE QR CODE AUTOMATICO
     window.onload = function() {
         new QRCode(document.getElementById("qrcode"), {
             text: window.location.href,
@@ -264,7 +295,6 @@
         });
     };
 
-    // FILTRO DI RICERCA LIVE
     function filterFiles() {
         let input = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('.resource-item').forEach(item => {
