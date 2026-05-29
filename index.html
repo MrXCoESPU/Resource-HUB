@@ -8,19 +8,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <style>
+        /* --- PALETTE COLORI COORDINATA AL LOGO --- */
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --panel-bg: rgba(30, 41, 59, 0.7);
-            --accent: #3b82f6;
+            --bg-main: #0a0a0a;             /* Nero profondo di sfondo */
+            --panel-bg: rgba(23, 23, 23, 0.85); /* Schede scure tattiche */
+            --accent: #d4af37;             /* Oro / Giallo del logo */
+            --accent-hover: #b8921a;       /* Oro più scuro al passaggio del mouse */
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --text-muted: #a3a3a3;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-gradient);
+            background-color: var(--bg-main);
             color: var(--text-main);
             min-height: 100vh;
             padding: 20px;
@@ -29,34 +30,55 @@
             align-items: center;
         }
 
-        /* Language Switcher */
-        .lang-switcher {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        /* Barra delle Lingue */
+        .lang-bar {
+            width: 100%;
+            max-width: 750px;
             display: flex;
-            gap: 10px;
-            background: var(--panel-bg);
-            padding: 8px 12px;
-            border-radius: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .lang-flag {
-            cursor: pointer;
+        .lang-btn {
             font-size: 1.5rem;
-            transition: transform 0.2s;
-            filter: grayscale(0.4);
+            cursor: pointer;
+            filter: grayscale(0.6);
+            transition: 0.3s;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            padding: 2px;
         }
 
-        .lang-flag.active { filter: grayscale(0); transform: scale(1.2); border-bottom: 2px solid var(--accent); }
+        .lang-btn:hover, .lang-btn.active {
+            filter: grayscale(0);
+            transform: scale(1.15);
+            border-color: var(--accent);
+        }
 
-        .hub-container { max-width: 700px; width: 100%; margin-top: 60px; }
+        .hub-container { max-width: 750px; width: 100%; }
 
-        header { text-align: center; margin-bottom: 30px; }
-        h1 { font-size: 1.8rem; margin-bottom: 8px; color: var(--accent); }
+        /* Header con Logo inserito */
+        header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .logo-img {
+            width: 160px; /* Dimensione del logo ottimizzata */
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
 
+        h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; color: var(--text-main); }
+        header p { color: var(--text-muted); font-size: 0.95rem; }
+        
+        /* QR Code */
         .qr-card {
             background: white;
             padding: 20px;
@@ -65,32 +87,41 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .qr-card p { color: #0f172a; font-weight: 700; margin-top: 10px; font-size: 0.8rem; text-align: center; }
+        .qr-card p { color: #0a0a0a; font-weight: 700; margin-top: 12px; font-size: 0.8rem; text-align: center; letter-spacing: 0.5px;}
 
+        /* Ricerca */
         .search-box {
             width: 100%;
             background: var(--panel-bg);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             padding: 14px 20px;
             border-radius: 12px;
             color: white;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             outline: none;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+        .search-box:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
         }
 
+        /* Liste e Categorie */
         .category-title {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin: 25px 0 10px 5px;
+            color: var(--accent);
+            margin: 25px 0 12px 5px;
+            letter-spacing: 1px;
         }
 
         .resource-item {
             background: var(--panel-bg);
-            padding: 16px;
+            padding: 18px;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -98,139 +129,147 @@
             text-decoration: none;
             color: inherit;
             margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.2s;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
         }
 
-        .resource-item:hover { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); }
+        .resource-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(35, 35, 35, 0.9);
+        }
 
-        .file-info { display: flex; align-items: center; gap: 12px; }
+        .file-info { display: flex; align-items: center; gap: 15px; }
         .file-icon { font-size: 1.5rem; }
-        .file-name { font-weight: 600; display: block; }
-        .file-meta { font-size: 0.75rem; color: var(--text-muted); }
+        .file-name { font-weight: 600; display: block; margin-bottom: 2px; }
+        .file-meta { font-size: 0.85rem; color: var(--text-muted); }
 
         .btn-download {
             background: var(--accent);
-            padding: 8px 15px;
+            color: #0a0a0a;
+            padding: 8px 16px;
             border-radius: 6px;
             font-size: 0.8rem;
             font-weight: 700;
+            transition: 0.2s;
+        }
+        .resource-item:hover .btn-download {
+            background: var(--accent-hover);
         }
 
-        @media print { .lang-switcher, .search-box, .btn-download, .category-title, .resource-item { display: none; } }
+        @media print { .lang-bar, .search-box, .category-title, .resource-item { display: none; } }
     </style>
 </head>
 <body>
 
-    <!-- Selezione Lingua -->
-    <div class="lang-switcher">
-        <span class="lang-flag active" onclick="setLanguage('it')" id="flag-it">🇮🇹</span>
-        <span class="lang-flag" onclick="setLanguage('en')" id="flag-en">🇬🇧</span>
-        <span class="lang-flag" onclick="setLanguage('fr')" id="flag-fr">🇫🇷</span>
+    <div class="lang-bar">
+        <span class="lang-btn active" onclick="setLanguage('it')" title="Italiano">🇮🇹</span>
+        <span class="lang-btn" onclick="setLanguage('en')" title="English">🇬🇧</span>
+        <span class="lang-btn" onclick="setLanguage('fr')" title="Français">🇫🇷</span>
     </div>
 
     <div class="hub-container">
         <header>
-            <h1 id="main-title">Training Department Resource HUB</h1>
-            <p id="sub-title">Materiali e documentazione per i corsisti</p>
+            <img src="logo.jpeg" alt="Training Department Logo" class="logo-img">
+            <h1 id="mainTitle">Training Department Resource HUB</h1>
+            <p id="subTitle">Materiali e Risorse Digitali</p>
         </header>
 
         <div class="qr-card">
             <div id="qrcode"></div>
-            <p id="qr-text">Scansiona per scaricare i file sul tuo dispositivo</p>
+            <p id="qrText">SCANSIONA PER ACCEDERE AI FILE DAL TUO DISPOSITIVO</p>
         </div>
 
-        <input type="text" id="searchInput" class="search-box" placeholder="Cerca risorse..." onkeyup="filterFiles()">
+        <input type="text" id="searchInput" class="search-box" placeholder="Cerca..." onkeyup="filterFiles()">
 
-        <!-- Sezione Documenti -->
-        <div class="category-title" id="cat-docs">Documenti</div>
-        <div id="files-container">
-            <!-- I file vengono gestiti dai link sotto, la lingua cambia solo le etichette -->
-            <a href="LINK_FILE_1" class="resource-item" target="_blank">
+        <div id="cat1" class="category-title">Documenti Tecnici</div>
+        <div class="resource-list">
+            
+            <a href="TUO_LINK_1" class="resource-item" target="_blank">
                 <div class="file-info">
-                    <div class="file-icon">📄</div>
+                    <span class="file-icon">📄</span>
                     <div>
-                        <span class="file-name">Dispensa_Corso_V1.pdf</span>
-                        <span class="file-meta" data-it="Slide del corso" data-en="Course slides" data-fr="Slides du cours">Slide del corso</span>
+                        <span class="file-name">Manuale Operativo v1.2</span>
+                        <span class="file-meta">PDF (3.5 MB)</span>
                     </div>
                 </div>
-                <div class="btn-download" data-it="Scarica" data-en="Download" data-fr="Télécharger">Scarica</div>
+                <div class="btn-download dl-text">SCARICA</div>
             </a>
             
-            <a href="LINK_FILE_2" class="resource-item" target="_blank">
+            <a href="TUO_LINK_2" class="resource-item" target="_blank">
                 <div class="file-info">
-                    <div class="file-icon">🖼️</div>
+                    <span class="file-icon">🖼️</span>
                     <div>
-                        <span class="file-name">Infografica_Tecnica.png</span>
-                        <span class="file-meta" data-it="Schema illustrativo" data-en="Illustrative diagram" data-fr="Schéma illustratif">Schema illustrativo</span>
+                        <span class="file-name">Schema Circuitale</span>
+                        <span class="file-meta">PNG (HD)</span>
                     </div>
                 </div>
-                <div class="btn-download" data-it="Scarica" data-en="Download" data-fr="Télécharger">Scarica</div>
+                <div class="btn-download dl-text">SCARICA</div>
             </a>
+
         </div>
     </div>
 
 <script>
+    // DIZIONARIO TRADUZIONI
     const translations = {
         it: {
-            title: "Training Department Resource HUB",
-            subtitle: "Materiali e documentazione per i corsisti",
-            qr: "Scansiona per scaricare i file sul tuo dispositivo",
-            search: "Cerca risorse...",
-            docs: "Documenti e Slide"
+            subTitle: "Materiali e Risorse Digitali",
+            qrText: "SCANSIONA PER ACCEDERE AI FILE DAL TUO DISPOSITIVO",
+            searchPlaceholder: "Cerca tra le risorse...",
+            cat1: "Documenti e Slide",
+            dlText: "SCARICA"
         },
         en: {
-            title: "Training Department Resource HUB",
-            subtitle: "Materials and documentation for trainees",
-            qr: "Scan to download files to your device",
-            search: "Search resources...",
-            docs: "Documents & Slides"
+            subTitle: "Digital Materials & Resources",
+            qrText: "SCAN TO ACCESS FILES FROM YOUR DEVICE",
+            searchPlaceholder: "Search resources...",
+            cat1: "Documents & Slides",
+            dlText: "DOWNLOAD"
         },
         fr: {
-            title: "Training Department Resource HUB",
-            subtitle: "Matériels et documentation pour les stagiaires",
-            qr: "Scannez per télécharger les fichiers sur votre appareil",
-            search: "Rechercher des ressources...",
-            docs: "Documents et Slides"
+            subTitle: "Matériels et Ressources Numériques",
+            qrText: "SCANNEZ POUR ACCÉDER AUX FICHIERS SUR VOTRE APPAREIL",
+            searchPlaceholder: "Rechercher des ressources...",
+            cat1: "Documents et Diapositives",
+            dlText: "TÉLÉCHARGER"
         }
     };
 
+    // LOGICA CAMBIO LINGUA
     function setLanguage(lang) {
-        // Aggiorna testi statici
-        document.getElementById('main-title').innerText = translations[lang].title;
-        document.getElementById('sub-title').innerText = translations[lang].subtitle;
-        document.getElementById('qr-text').innerText = translations[lang].qr;
-        document.getElementById('searchInput').placeholder = translations[lang].search;
-        document.getElementById('cat-docs').innerText = translations[lang].docs;
-
-        // Aggiorna etichette dinamiche dei file
-        document.querySelectorAll('[data-' + lang + ']').forEach(el => {
-            el.innerText = el.getAttribute('data-' + lang);
+        document.getElementById('subTitle').innerText = translations[lang].subTitle;
+        document.getElementById('qrText').innerText = translations[lang].qrText;
+        document.getElementById('searchInput').placeholder = translations[lang].searchPlaceholder;
+        document.getElementById('cat1').innerText = translations[lang].cat1;
+        
+        document.querySelectorAll('.dl-text').forEach(el => {
+            el.innerText = translations[lang].dlText;
         });
 
-        // Gestione classi attive sulle bandiere
-        document.querySelectorAll('.lang-flag').forEach(f => f.classList.remove('active'));
-        document.getElementById('flag-' + lang).classList.add('active');
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
     }
 
-    // Generatore QR
+    // GENERATORE QR CODE AUTOMATICO
     window.onload = function() {
         new QRCode(document.getElementById("qrcode"), {
             text: window.location.href,
-            width: 160,
-            height: 160,
-            colorDark : "#0f172a",
-            colorLight : "#ffffff"
+            width: 180,
+            height: 180,
+            colorDark : "#0a0a0a",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
         });
     };
 
-    // Filtro Ricerca
+    // FILTRO DI RICERCA LIVE
     function filterFiles() {
         let input = document.getElementById('searchInput').value.toLowerCase();
-        let items = document.querySelectorAll('.resource-item');
-        items.forEach(item => {
-            let text = item.innerText.toLowerCase();
-            item.style.display = text.includes(input) ? "flex" : "none";
+        document.querySelectorAll('.resource-item').forEach(item => {
+            let name = item.querySelector('.file-name').innerText.toLowerCase();
+            item.style.display = name.includes(input) ? "flex" : "none";
         });
     }
 </script>
